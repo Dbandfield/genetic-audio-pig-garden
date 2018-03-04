@@ -13,6 +13,7 @@ var instr = document.getElementById('instructions');
 var pigMdl;
 var pigs = [];
 var floor;
+var nextGender = "female";
 
 var havePointerLock = 'pointerLockElement' in document ||
     'mozPointerLockElement' in document ||
@@ -118,11 +119,7 @@ function init() {
     loader.load('data/models/json/pig/pig.json', function(_obj) {
         _obj.traverse(function(_child) {
             if (_child instanceof THREE.SkinnedMesh) {
-                for (var i = 0; i < 3; i++) {
                     pigMdl = _child.clone();
-                    pigs.push(new Pig(pigMdl.clone(),
-                        null, null, listener, scene, floor));
-                }
             }
         })
 
@@ -228,6 +225,36 @@ function animate() {
     prevTime = time;
 
     var params = [];
+
+    // make new pigs if necessary
+    if(pigMdl)
+    {
+        if(pigs.length < 3)
+        {
+            for (var i = 0; i < 6; i++) {
+                pigs.push(new Pig(pigMdl.clone(), listener, scene, floor));
+            }
+        }
+    }
+
+
+    // remove dead
+    var deadPigs = [];
+    for (var p in pigs)
+    {
+        if(pigs[p].getDead())
+        {
+            deadPigs.push(pigs[p]);
+        }
+    }
+
+
+    for(var i in deadPigs)
+    {
+        pigs.splice(pigs.indexOf(deadPigs[i]), 1);
+    }
+
+
     for (var p in pigs) {
         pigs[p].update(delta);
         params.push(pigs[p].getBaby());
@@ -259,12 +286,12 @@ function animate() {
         if (params[p])
         {
             console.log("BABY!");
-            pigs.push(new Pig(pigMdl.clone(),
-                null, null, listener, scene, floor, params[p].clone()));
+            pigs.push(new Pig(pigMdl.clone(),listener, scene, floor, params[p]));
         }
     }
 
-    if (controlsEnabled === true) {
+    if (controlsEnabled === true)
+    {
         raycaster.ray.origin.copy(controls.getObject().position);
         raycaster.ray.origin.y -= 10;
         var intersections = raycaster.intersectObject(floor);

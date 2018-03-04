@@ -15,6 +15,10 @@ function lerp(_a, _b, _f)
   return (_a * (1.0 - _f)) + (_b * _f);
 }
 
+function percent()
+{
+    return Math.random() * 100;
+}
 
 var NOTES =
 {
