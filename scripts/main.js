@@ -16,7 +16,7 @@ var controls;
 
 var raycaster;
 
-var gardenSize = 800;
+var gardenSize = 400;
 
 var restartTmr = 0;
 var restartTmrMax = 1800; // 30min
@@ -35,6 +35,12 @@ var pigs = [];
 var floor;
 var nextGender = "female";
 var heartMdl = null;
+
+window.addEventListener("gamepadconnected", function(e) {
+	console.log("Game pad connected");
+});
+
+
 
 var havePointerLock = 'pointerLockElement' in document ||
     'mozPointerLockElement' in document ||
@@ -178,8 +184,10 @@ function init()
     var light = new THREE.HemisphereLight(0xffffff, 0x112255, 1);
     light.position.set(0.5, 1, 0.75);
     scene.add(light);
-    controls = new THREE.PointerLockControls(camera);
-    scene.add(controls.getObject());
+    /*controls = new THREE.PointerLockControls(camera);
+    scene.add(controls.getObject());*/
+
+    controls = new THREE.GamepadControls( camera );
     var onKeyDown = function(event) {
         switch (event.keyCode) {
             case 38: // up
@@ -375,7 +383,7 @@ function animate() {
 
     if (controlsEnabled === true)
     {
-        raycaster.ray.origin.copy(controls.getObject().position);
+        raycaster.ray.origin.copy(controls.object.position);
         raycaster.ray.origin.y -= 10;
         var intersections = raycaster.intersectObject(floor);
         var onObject = intersections.length > 0;
@@ -399,14 +407,14 @@ function animate() {
             velocity.y = 50;
         }
 
-        controls.getObject().translateX(velocity.x * delta);
-        controls.getObject().translateY(velocity.y * delta);
-        controls.getObject().translateZ(velocity.z * delta);
+       // controls.getObject().translateX(velocity.x * delta);
+        controls.object.translateY(velocity.y * delta);
+       // controls.getObject().translateZ(velocity.z * delta);
 
-        if(controls.getObject().position.x < -(gardenSize)) controls.getObject().position.x =  -(gardenSize/2);
-        if(controls.getObject().position.x >  (gardenSize)) controls.getObject().position.x =    (gardenSize/2);
-        if(controls.getObject().position.z < -(gardenSize)) controls.getObject().position.z =  -(gardenSize/2);
-        if(controls.getObject().position.z >  (gardenSize)) controls.getObject().position.z =    (gardenSize/2);
+        if(controls.object.position.x < -(gardenSize)) controls.object.position.x =  -(gardenSize/2);
+        if(controls.object.position.x >  (gardenSize)) controls.object.position.x =    (gardenSize/2);
+        if(controls.object.position.z < -(gardenSize)) controls.object.position.z =  -(gardenSize/2);
+        if(controls.object.position.z >  (gardenSize)) controls.object.position.z =    (gardenSize/2);
 
 
         // if ( controls.getObject().position.y < 10 )
