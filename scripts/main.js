@@ -16,7 +16,7 @@ var controls;
 
 var raycaster;
 
-var gardenSize = 400;
+var gardenSize = 800;
 
 var restartTmr = 0;
 var restartTmrMax = 1800; // 30min
@@ -403,10 +403,10 @@ function animate() {
         controls.getObject().translateY(velocity.y * delta);
         controls.getObject().translateZ(velocity.z * delta);
 
-        if(controls.getObject().position.x < -(gardenSize/2)) controls.getObject().position.x =  -(gardenSize/2);
-        if(controls.getObject().position.x >  (gardenSize/2)) controls.getObject().position.x =    (gardenSize/2);
-        if(controls.getObject().position.z < -(gardenSize/2)) controls.getObject().position.z =  -(gardenSize/2);
-        if(controls.getObject().position.z >  (gardenSize/2)) controls.getObject().position.z =    (gardenSize/2);
+        if(controls.getObject().position.x < -(gardenSize)) controls.getObject().position.x =  -(gardenSize/2);
+        if(controls.getObject().position.x >  (gardenSize)) controls.getObject().position.x =    (gardenSize/2);
+        if(controls.getObject().position.z < -(gardenSize)) controls.getObject().position.z =  -(gardenSize/2);
+        if(controls.getObject().position.z >  (gardenSize)) controls.getObject().position.z =    (gardenSize/2);
 
 
         // if ( controls.getObject().position.y < 10 )

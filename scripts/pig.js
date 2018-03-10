@@ -58,8 +58,8 @@ class Pig
       this.m_nrmCol = 0xffbbbb;
       this.m_sndCol = 0xff8888;
       this.m_ageCol = 0xffff00;
-      this.m_reprCol = 0xffffff;
-      this.m_fndMt= 0xffffff;
+      this.m_reprCol = 0xffbbbb;
+      this.m_fndMt= 0xffbbbb;
 
 
       // genetics
