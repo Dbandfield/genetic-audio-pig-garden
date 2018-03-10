@@ -38454,11 +38454,13 @@
 
 			if ( this.filters.length > 0 ) {
 
-				this.source.connect( this.filters[ 0 ] );
+				console.log(this.filters);
+				console.log(this.source);
+				this.source.connect( this.filters[ 0 ].input );
 
 				for ( var i = 1, l = this.filters.length; i < l; i ++ ) {
 
-					this.filters[ i - 1 ].connect( this.filters[ i ] );
+					this.filters[ i - 1 ].connect( this.filters[ i ].input );
 
 				}
 
@@ -38478,11 +38480,11 @@
 
 			if ( this.filters.length > 0 ) {
 
-				this.source.disconnect( this.filters[ 0 ] );
+				this.source.disconnect( this.filters[ 0 ].input );
 
 				for ( var i = 1, l = this.filters.length; i < l; i ++ ) {
 
-					this.filters[ i - 1 ].disconnect( this.filters[ i ] );
+					this.filters[ i - 1 ].disconnect( this.filters[ i ].input );
 
 				}
 

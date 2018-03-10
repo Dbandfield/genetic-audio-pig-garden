@@ -10,9 +10,13 @@ class PigParams
         }
         else
         {
-            this.m_song.push(NOTES.E);
-            this.m_song.push(NOTES.A);
-            this.m_song.push(NOTES.C);
+            // this.m_song.push(NOTES.E);
+            // this.m_song.push(NOTES.A);
+            // this.m_song.push(NOTES.C);
+            this.m_song.push(firstNotes[0]);
+            this.m_song.push(firstNotes[1]);
+            this.m_song.push(firstNotes[2]);
+
         }
         this.m_songLength = this.m_song.length;
         this.m_songIndex = 0;
@@ -76,6 +80,11 @@ class PigParams
         }
 
         return new PigParams(_pos, song);
+    }
+
+    getSong()
+    {
+        return this.m_song;
     }
 
     getLength()

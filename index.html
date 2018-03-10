@@ -2,6 +2,7 @@
   <head>
 
     <title> Genetic Audio Pigs </title>
+    <link rel="stylesheet" href="style/main.css">
 
   </head>
 
@@ -10,19 +11,39 @@
 <div id="overlay">
 
 	<div id="instructions">
-		<span style="font-size:40px">Click to play</span>
-		<br />
-		(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+        <!-- A : Begin <br>
+		Left Stick: Look<br>
+        Right stick: Move<br> -->
+
+        W, A, S, D : move
+        <br>
+        Mouse : look
+        <br>
+        E : focus mouse
+
 	</div>
+
+
 
 </div>
 
+<div id="log-wrapper">
+    <div id="log1" class="log"></div>
+    <div id="log2" class="log"></div>
+    <div id="log3" class="log"></div>
 
+</div>
+
+<div id="display3D"></div>
+
+    <script src = "scripts/simple-reverb.js"></script>
     <script src = "scripts/three.js"></script>
     <script src = "scripts/OBJLoader.js"></script>
     <script src = "scripts/PointerLockControls.js"></script>
     <script src = "scripts/ImprovedNoise.js"></script>
     <script src = "scripts/helper.js"></script>
+    <script src = "scripts/logger.js"></script>
+    <script src = "scripts/heart.js"></script>
     <script src = "scripts/pig_params.js"></script>
     <script src = "scripts/pig.js"> </script>
     <script src = "scripts/main.js"> </script>

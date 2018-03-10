@@ -1,0 +1,40 @@
+#overlay
+{
+    margin: 10px;
+    position: absolute;
+    font-family: monospace;
+    color: #333366;
+
+}
+
+body
+{
+    border: none;
+    margin: 0px;
+}
+
+#log-wrapper
+{
+    margin: 10px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-family: monospace;
+    text-align: right;
+    color: #333366;
+}
+
+#log1
+{
+    font-size: 1.0rem;
+}
+
+#log2
+{
+    font-size: 0.8rem;
+}
+
+#log3
+{
+    font-size: 0.6rem;
+}

@@ -1,10 +1,15 @@
 class Pig
 {
-  constructor(_mdl, _listener, _scn, _floor, _params=null)
+  constructor(_mdl, _listener, _scn, _floor, _heartMdl, _params=null)
   {
       this.m_floor = _floor;
       this.m_scn = _scn;
       this.m_listener = _listener;
+      this.m_heartMdl = _heartMdl;
+
+      this.m_heart = null;
+
+      this.m_playing = false;
 
       //death
       this.m_dying = false;
@@ -12,7 +17,7 @@ class Pig
       // how long it takes for pig to die once dying has started
       this.m_dyingTmr = 0;
       this.m_dyingTmrMax = 10;
-      this.m_deathAge = 10;
+      this.m_deathAge = 6;
 
       this.m_ageStage = 1;
       this.m_ageSeconds = 0;
@@ -27,7 +32,7 @@ class Pig
       this.m_bcastLookForMate = false;
       this.m_lookForMate = false;
       this.m_reproduceTmr = 0;
-      this.m_reproduceTmrMax = (Math.random() * 60) + 60;
+      this.m_reproduceTmrMax = (Math.random() * 45) + 45;
 
       this.m_mate = null;
       this.m_sexStarted =false;
@@ -49,11 +54,13 @@ class Pig
       }
 
       this.m_height = 3;
-      this.m_nrmCol = 0xffffff;
+      // this.m_nrmCol = 0xffffff;
+      this.m_nrmCol = 0xffbbbb;
       this.m_sndCol = 0xff8888;
       this.m_ageCol = 0xffff00;
       this.m_reprCol = 0xffffff;
       this.m_fndMt= 0xffffff;
+
 
       // genetics
       if(_params)
@@ -65,15 +72,58 @@ class Pig
         this.m_params = new PigParams();
       }
 
+      var logNotes = [];
+      var song = this.m_params.getSong();
+      var songString = "";
+      for(var n in song)
+      {
+          if(song[n] == NOTES.A)
+          {
+              songString += " A";
+          }
+          else if(song[n] == NOTES.B)
+          {
+              songString += " B";
+          }
+          else if(song[n] == NOTES.C)
+          {
+              songString += " C";
+
+          }
+          else if(song[n] == NOTES.D)
+          {
+              songString += " D";
+
+          }
+          else if(song[n] == NOTES.E)
+          {
+              songString += " E";
+
+          }
+          else if(song[n] == NOTES.F)
+          {
+              songString += " F";
+
+          }
+          else if(song[n] == NOTES.G)
+          {
+              songString += " G";
+
+          }
+      }
+
+      logger.log("A " + this.m_gender + " animal was born with the song" + songString);
 
       // model
     this.m_mdl = _mdl;
     this.m_mdl.material = new THREE.MeshLambertMaterial({color: this.m_nrmCol});
     this.m_mdl.material.skinning = true;
-    this.m_mdl.rotateY(radians(270));
+     this.m_mdl.rotateY(radians(180));
+    this.m_mdl.rotateZ(radians(90));
+    this.m_mdl.rotateX(radians(270));
+    //this.m_mdl.rotateY(radians(270));
 
     // sound
-    var conv = this.m_listener.context.createConvolver();
     this.m_player1 = new THREE.PositionalAudio(this.m_listener);
     this.m_player1.setDistanceModel('inverse');
     this.m_player1.setRefDistance(1);
@@ -85,9 +135,15 @@ class Pig
     this.m_osc1.frequency.setValueAtTime(note,
                                         this.m_listener.context.currentTime);
     this.m_player1.setOscillatorSource(this.m_osc1, note);
-    this.m_player1.setVolume(0.8);
+    this.m_player1.setVolume(3.0);
+    // this.m_filters1 = [];
+    // this.m_filters1.push(new SimpleReverb(this.m_listener.context, {seconds: 0.1, decay: 2, reverse:1}));
+    // this.m_filters1.push(new SimpleReverb(this.m_listener.context, {seconds: 0.2, decay: 2, reverse:1}));
 
-    conv.buffer = this.m_osc1.buffer;
+    // console.log(this.m_filters1);
+    // this.m_player1.setFilters(this.m_filters1);
+    //
+    // conv.buffer = this.m_osc1.buffer;
 
     this.m_player2 = new THREE.PositionalAudio(this.m_listener);
     this.m_player2.setDistanceModel('inverse');
@@ -99,7 +155,10 @@ class Pig
     this.m_osc2.frequency.setValueAtTime(note,
                                         this.m_listener.context.currentTime);
     this.m_player2.setOscillatorSource(this.m_osc2, note);
-    this.m_player2.setVolume(0.8);
+    this.m_player2.setVolume(3.0);
+    // this.m_filters2 = [];
+    // this.m_filters2.push(new SimpleReverb(this.m_listener.context, {seconds: 0.1, decay: 1, reverse:0}));
+    // this.m_player2.setFilters(this.m_filters2);
 
     this.m_varTimeToSound = 10000;
     this.m_baseTimeToSound = 10000;
@@ -127,8 +186,8 @@ class Pig
     }
     else
     {
-        this.m_obj.position.set((Math.random() * 500) -250, this.m_height,
-                                    (Math.random() * 500) -250);
+        this.m_obj.position.set((Math.random() * (gardenSize/2)) -250, this.m_height,
+                                    (Math.random() * (gardenSize/2)) -250);
     }
 
     // animations
@@ -168,6 +227,8 @@ class Pig
       if(!this.m_sexStarted) this.updateAge(delta);
       this.ageFlash(delta);
       this.reproduceUpdate(delta);
+      if(this.m_heart) this.m_heart.update();
+      //else if(this.m_heartMdl) this.m_heart = new Heart(this.m_heartMdl, this, this.m_scn);
   }
 
   reproduceUpdate(_delta)
@@ -187,7 +248,12 @@ class Pig
           this.m_reproduceTmr += _delta;
           if(this.m_reproduceTmr > this.m_reproduceTmrMax)
           {
-              console.log("Now looking for mate");
+              // console.log("Now looking for mate");
+              if(this.m_heartMdl)
+              {
+                  this.m_heart = new Heart(this.m_heartMdl, this, this.m_scn);
+              }
+
               this.m_lookForMate = true;
               this.m_reproduceTmr = 0;
               this.m_bcastLookForMate = true;
@@ -217,17 +283,25 @@ class Pig
               this.m_lookForMate = false;
               this.m_bcastLookForMate = false;
 
+              var p;
+
               if(this.m_gender == "female")
               {
-                  var p = PigParams.join(this.m_params, this.m_mate.getParams(), this.m_obj.position);
+                  p = PigParams.join(this.m_params, this.m_mate.getParams(), this.m_obj.position);
                   this.m_mate = null;
-                  return p;
               }
               else
               {
                   this.m_mate = null;
-                  return null;
+                p = null;
+            }
+              if(this.m_heart)
+              {
+                  this.m_heart.removeFromScene();
+                  this.m_heart = null;
               }
+
+              return p;
             }
       }
   }
@@ -248,12 +322,13 @@ class Pig
 
   setMate(_mate)
   {
-      console.log("Mate found!");
+      // console.log("Mate found!");
       this.m_mate = _mate;
       this.m_target = this.m_mate.getPosition();
       // this.m_target.y = this.m_height;
       this.m_bcastLookForMate = false;
       this.m_mdl.material.setValues({color:this.m_fndMt});
+      this.m_heart.flash();
   }
 
   getPosition()
@@ -320,6 +395,11 @@ class Pig
       }
   }
 
+  kill()
+  {
+      this.m_ageStage = this.m_deathAge;
+  }
+
   updateAge(_delta)
   {
       if(this.m_ageStage < this.m_deathAge)
@@ -327,7 +407,7 @@ class Pig
           this.m_ageSeconds += _delta;
           if(this.m_ageSeconds > this.m_tmToAge)
           {
-              console.log("age!");
+              // console.log("age!");
               this.m_ageStage ++;
               this.m_ageSeconds = 0;
               this.m_tmToAge = (Math.random() * 30) + 60;
@@ -343,19 +423,24 @@ class Pig
       if(this.m_dying && !this.m_lookForMate)
       {
           this.m_dyingTmr += _delta;
-          if(this.m_dyingTmr > this.m_dyingTmrMax)
+          if(this.m_dyingTmr > this.m_dyingTmrMax && !this.m_playing)
           {
               this.m_scn.remove(this.m_obj);
               this.m_player1 = null;
               this.m_player2 = null;
               this.m_mate = null;
               this.m_dead = true;
+              if(this.m_heart)
+              {
+                  this.m_heart.removeFromScene();
+                  this.m_heart = null;
+              }
           }
       }
 
       if(this.m_dead)
       {
-          console.log(" I AM DEAD ");
+          // console.log(" I AM DEAD ");
       }
   }
 
@@ -440,7 +525,7 @@ class Pig
                         a);
       v1.add(v2);
 
-      if(v1.distanceTo(new THREE.Vector3(0, this.m_height, 0)) > 700)
+      if(v1.distanceTo(new THREE.Vector3(0, this.m_height, 0)) > (this.gardenSize/2))
       {
           v1 = new THREE.Vector3(0, this.m_height, 0);
       }
@@ -449,9 +534,12 @@ class Pig
 
   playSound()
   {
-      console.log("NOTES: " + this.m_params.getSong());
+      // console.log("NOTES: " + this.m_params.getSong());
+
+      this.m_playing = true;
 
       var note = this.m_params.getNextNote();
+
       this.m_osc1.frequency.setValueAtTime(note,
                                           this.m_listener.context.currentTime);
       this.m_player1.setOscillatorSource(this.m_osc1, note);
@@ -476,7 +564,7 @@ class Pig
 
       var self = this;
 
-      if(note)
+      if(note && !this.m_dying)
       {
           this.m_osc1.frequency.setValueAtTime(note,
                                               this.m_listener.context.currentTime);
@@ -486,6 +574,9 @@ class Pig
           this.m_player2.setOscillatorSource(this.m_osc1, note);
           if(this.m_player1) this.m_player1.play();
           if(this.m_player2) this.m_player2.play();
+
+
+
           setTimeout(function(){if(self){self.nextSound();}}, self.m_soundTime);
       }
       else
@@ -496,9 +587,14 @@ class Pig
 
   stopSound()
   {
+      this.m_playing = false;
       var self = this;
       this.m_timeToSound = this.m_baseTimeToSound + (Math.random()*this.m_varSoundTime);
-      setTimeout(function(){self.playSound()}, self.m_timeToSound);
+
+      if(!this.m_dying)
+      {
+          setTimeout(function(){self.playSound()}, self.m_timeToSound);
+      }
 
       if(this.m_lookForMate)
       {
