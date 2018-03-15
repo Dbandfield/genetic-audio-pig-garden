@@ -43,30 +43,24 @@ if (havePointerLock) {
     var element = document.body;
     var pointerlockchange = function(event)
     {
-        // if (document.pointerLockElement === element ||
-        //     document.mozPointerLockElement === element ||
-        //     document.webkitPointerLockElement === element) {
-        //     controlsEnabled = true;
-        //     controls.enabled = true;
-        //     overlay.style.display = 'none';
-        // } else {
-        //     controls.enabled = false;
-        //     velocity.set(0, 0, 0);
-        //     moveLeft = false;
-        //     moveRight = false;
-        //     moveForward = false;
-        //     moveBackward = false;
-        //     overlay.style.display = 'block';
-        //     instr.style.display = '';
-        // }
-        console.log("Pointer lock change!");
-        controlsEnabled = true;
-        controls.enabled = true;
-        // overlay.style.display = 'none';
+        if (document.pointerLockElement === element ||
+            document.mozPointerLockElement === element ||
+            document.webkitPointerLockElement === element) {
+            controlsEnabled = true;
+            controls.enabled = true;
+            overlay.style.display = 'none';
+        } else {
+            controls.enabled = false;
+            velocity.set(0, 0, 0);
+            moveLeft = false;
+            moveRight = false;
+            moveForward = false;
+            moveBackward = false;
+            overlay.style.display = 'table';
+        }
     };
 
     var pointerlockerror = function(event) {
-        instr.style.display = '';
         console.log("Pointer lock error!");
     };
     // Hook pointer lock state change events
@@ -76,8 +70,7 @@ if (havePointerLock) {
     document.addEventListener('pointerlockerror', pointerlockerror, false);
     document.addEventListener('mozpointerlockerror', pointerlockerror, false);
     document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
-    instr.addEventListener('click', function(event) {
-        instr.style.display = 'none';
+    overlay.addEventListener('click', function(event) {
 
         element.requestPointerLock = element.requestPointerLock ||
             element.mozRequestPointerLock ||
@@ -234,7 +227,7 @@ function init()
 
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
-    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 1000);
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(window.devicePixelRatio);

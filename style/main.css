@@ -1,9 +1,25 @@
 #overlay
 {
-    margin: 10px;
+    display: table;
+    margin: 0px;
     position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(100, 0, 0, 0.3);
+    box-shadow: 0 0 400px rgba(50, 0, 0, 0.9) inset;
+
+}
+
+#overlay-text
+{
+    display: table-cell;
+    margin: auto;
+    font-size: 4rem;
     font-family: monospace;
-    color: #333366;
+    vertical-align: middle;
+    width: 100%;
+    text-align: center;
+    color: #ffddee;
 
 }
 
@@ -11,6 +27,14 @@ body
 {
     border: none;
     margin: 0px;
+}
+
+#instructions
+{
+    margin: 10px;
+    position: absolute;
+    font-family: monospace;
+    color: #333366;
 }
 
 #log-wrapper
