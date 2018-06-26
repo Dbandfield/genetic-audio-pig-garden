@@ -29,6 +29,10 @@ Then head over to localhost:8000
 support the oscillator functions from the webaudio API. Because the sound here is randomised,
 these oscillators were important to me.
 
+- PointerLockControls.js from the three.js examples folder. This is used for 1st Person mouse controls
+
+- ImprovedNoise.js also from the three.js examples folder. This is used to generate the random terrain
+
 
 
 
