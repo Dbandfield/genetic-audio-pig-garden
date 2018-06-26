@@ -33,6 +33,7 @@ these oscillators were important to me.
 
 - ImprovedNoise.js also from the three.js examples folder. This is used to generate the random terrain
 
+- OBJLoader, again three.js examples, to load models as .json files
 
 
 
