@@ -19,16 +19,21 @@ class Pig
       this.m_dyingTmrMax = 10;
       this.m_deathAge = 6;
 
+      // pigs do not grow continuously, but in stages
+      // for visual aesthetic reasons
       this.m_ageStage = 1;
       this.m_ageSeconds = 0;
-      this.m_tmToAge = (Math.random() * 30) + 60;
-      this.m_ageFlashTmrMain = 0;
+      this.m_tmToAge = (Math.random() * 30) + 60; // lets not be too predictable
+      // we need a few different variable to handle the timing of the 
+      // flashing when growing a stage.
+      this.m_ageFlashTmrMain = 0; 
       this.m_ageFlashTmrSwitch= 0;
       this.m_ageFlashTmrMax = 1;
       this.m_ageFlashTmrMaxS = 1;
       this.m_ageFlash = false;
       this.m_ageFlashTrack = true;
 
+      // cready to reproduce??
       this.m_bcastLookForMate = false;
       this.m_lookForMate = false;
       this.m_reproduceTmr = 0;
@@ -40,8 +45,8 @@ class Pig
       this.m_sexTmr = 0;
       this.m_sexTmrMax = 6;
 
-      // var ranGen = Math.random();
-      // this.m_gender = ranGen < 0.5 ? "male" : "female";
+      // alternate genders to keep things
+      // simple, if not realistic
       if(nextGender == "male")
       {
           this.m_gender = "male";
@@ -54,13 +59,12 @@ class Pig
       }
 
       this.m_height = 3;
-      // this.m_nrmCol = 0xffffff;
-      this.m_nrmCol = 0xffbbbb;
-      this.m_sndCol = 0xff8888;
-      this.m_ageCol = 0xffff00;
-      this.m_reprCol = 0xffbbbb;
-      this.m_fndMt= 0xffbbbb;
-
+      // various colours of various states
+      this.m_nrmCol = 0xffbbbb; // most of the time
+      this.m_sndCol = 0xff8888; // when playing sound
+      this.m_ageCol = 0xffff00; // when growing
+      this.m_reprCol = 0xffbbbb; // when ... reproducing
+      this.m_fndMt= 0xffbbbb; // when looking for mate
 
       // genetics
       if(_params)
@@ -121,11 +125,13 @@ class Pig
      this.m_mdl.rotateY(radians(180));
     this.m_mdl.rotateZ(radians(90));
     this.m_mdl.rotateX(radians(270));
-    //this.m_mdl.rotateY(radians(270));
 
     // sound
+    // There are two oscillators that play at once
+    // a square and a sine. Same note though.
     this.m_player1 = new THREE.PositionalAudio(this.m_listener);
     this.m_player1.setDistanceModel('inverse');
+    // these effect where you can hear the pig from
     this.m_player1.setRefDistance(1);
     this.m_player1.setMaxDistance(50);
     this.m_player1.setRolloffFactor(5);
@@ -136,14 +142,6 @@ class Pig
                                         this.m_listener.context.currentTime);
     this.m_player1.setOscillatorSource(this.m_osc1, note);
     this.m_player1.setVolume(3.0);
-    // this.m_filters1 = [];
-    // this.m_filters1.push(new SimpleReverb(this.m_listener.context, {seconds: 0.1, decay: 2, reverse:1}));
-    // this.m_filters1.push(new SimpleReverb(this.m_listener.context, {seconds: 0.2, decay: 2, reverse:1}));
-
-    // console.log(this.m_filters1);
-    // this.m_player1.setFilters(this.m_filters1);
-    //
-    // conv.buffer = this.m_osc1.buffer;
 
     this.m_player2 = new THREE.PositionalAudio(this.m_listener);
     this.m_player2.setDistanceModel('inverse');
@@ -156,15 +154,13 @@ class Pig
                                         this.m_listener.context.currentTime);
     this.m_player2.setOscillatorSource(this.m_osc2, note);
     this.m_player2.setVolume(3.0);
-    // this.m_filters2 = [];
-    // this.m_filters2.push(new SimpleReverb(this.m_listener.context, {seconds: 0.1, decay: 1, reverse:0}));
-    // this.m_player2.setFilters(this.m_filters2);
 
+    // time between playing sound
     this.m_varTimeToSound = 10000;
     this.m_baseTimeToSound = 10000;
     this.m_timeToSound = 10000;
 
-    //this.m_varSoundTime = 250;
+    // how long sound lasts
     this.m_varSoundTime = 0;
     this.m_baseSoundTime = 500;
     this.m_soundTime = 500;
@@ -191,14 +187,15 @@ class Pig
     }
 
     // animations
+    // is very simple. Just plays walk animation constantly
+    // somehow it doesnt look so bad though.
     this.m_animMxr = new THREE.AnimationMixer(this.m_mdl);
-    // this.m_clips = this.m_mdl.geometry.animations;
 
-    //var clip = THREE.AnimationClip.findByName(this.m_clips, "ArmatureAction");
     var action = this.m_animMxr.clipAction("ArmatureAction");
     action.play();
 
     // MOVEMENT
+    // physics physics physics
     this.m_target = new THREE.Vector3((Math.random() * 500) -250, this.m_height,
         (Math.random() * 500) -250);
     this.m_movVel = new THREE.Vector3(1, 0, 0);
@@ -338,8 +335,10 @@ class Pig
 
   ageFlash(_delta)
   {
-      //console.log(this.m_ageFlashTmrMax);
-      if(this.m_ageFlash)
+    // complicated timing stuff!
+    // basically just to make the pig flash yellow 
+    // on and off when it grows
+    if(this.m_ageFlash)
       {
           this.m_ageFlashTmrMain += _delta;
           this.m_ageFlashTmrSwitch += _delta;
