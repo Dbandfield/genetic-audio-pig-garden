@@ -1,7 +1,5 @@
 "use strict";
 
-// var SimpleReverb = require("simple-reverb");
-
 var logger = new Logger(document.getElementById('log1'),
                         document.getElementById('log2'),
                         document.getElementById('log3'));
