@@ -1,7 +1,5 @@
 "use strict";
 
-// var SimpleReverb = require("simple-reverb");
-
 var logger = new Logger(document.getElementById('log1'),
                         document.getElementById('log2'),
                         document.getElementById('log3'));
@@ -21,21 +19,26 @@ var gardenSize = 800;
 var restartTmr = 0;
 var restartTmrMax = 1800; // 30min
 
+// Create the first song. It is made up of 3 random notes.
 var firstNotes = [];
 firstNotes.push(NOTES.noteArray[Math.floor(Math.random() * NOTES.noteArray.length)]);
 firstNotes.push(NOTES.noteArray[Math.floor(Math.random() * NOTES.noteArray.length)]);
 firstNotes.push(NOTES.noteArray[Math.floor(Math.random() * NOTES.noteArray.length)]);
 
-
+// appears when mouse focus is lost
 var overlay = document.getElementById('overlay');
+// the writing saying what to do
 var instr = document.getElementById('instructions');
+// where the scene is rendered
 var display3D = document.getElementById('display3D');
 var pigMdl = null;
 var pigs = [];
 var floor;
+// this is alternated
 var nextGender = "female";
 var heartMdl = null;
 
+// handle pointerlock stuff
 var havePointerLock = 'pointerLockElement' in document ||
     'mozPointerLockElement' in document ||
     'webkitPointerLockElement' in document;
@@ -43,26 +46,9 @@ if (havePointerLock) {
     var element = document.body;
     var pointerlockchange = function(event)
     {
-        // if (document.pointerLockElement === element ||
-        //     document.mozPointerLockElement === element ||
-        //     document.webkitPointerLockElement === element) {
-        //     controlsEnabled = true;
-        //     controls.enabled = true;
-        //     overlay.style.display = 'none';
-        // } else {
-        //     controls.enabled = false;
-        //     velocity.set(0, 0, 0);
-        //     moveLeft = false;
-        //     moveRight = false;
-        //     moveForward = false;
-        //     moveBackward = false;
-        //     overlay.style.display = 'block';
-        //     instr.style.display = '';
-        // }
         console.log("Pointer lock change!");
         controlsEnabled = true;
         controls.enabled = true;
-        // overlay.style.display = 'none';
     };
 
     var pointerlockerror = function(event) {
@@ -90,6 +76,7 @@ if (havePointerLock) {
     instr.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
 }
 
+// physics etc.
 var controlsEnabled = true;
 var moveForward = false;
 var moveBackward = false;
@@ -102,19 +89,18 @@ var prevTime = performance.now();
 var velocity = new THREE.Vector3();
 var direction = new THREE.Vector3();
 
-init();
-animate();
-
-
+init(); // setup code runs once
+animate(); // update code runs repeatedly
 
 function init()
 {
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-    listener = new THREE.AudioListener();
+    listener = new THREE.AudioListener(); // so we can hear
     camera.add(listener);
     scene = new THREE.Scene();
 
     // floor
+    // generate random geometry
     var worldWidth = 50;
     var worldDepth = 50;
     var data = generateHeight(worldWidth, worldDepth);
@@ -130,8 +116,7 @@ function init()
     }
 
     var floorMaterial = new THREE.MeshLambertMaterial({
-        //color: 0x444466
-        //color: 0x000000
+
         color: 0xccdddd
         });
     floor = new THREE.Mesh(floorGeometry, floorMaterial);
@@ -147,6 +132,7 @@ function init()
 
     var onError = function(xhr) {};
 
+    // load the pig object
     var pigLoader = new THREE.ObjectLoader();
     pigLoader.load('data/models/json/pig/pig.json', function(_obj) {
         _obj.traverse(function(_child) {
@@ -156,25 +142,15 @@ function init()
         })
     });
 
+    // load the heart object
     var heartLoader = new THREE.JSONLoader();
     heartLoader.load('data/models/json/heart/heart.json', function(_obj) {
         heartMdl = _obj.clone();
-        //console.log(heartMdl);
-        // _obj.traverse(function(_child) {
-        //     console.log(_obj);
-        //
-        //     //if (_child instanceof THREE.Mesh) {
-        //             //heartMdl = _child.clone();
-        //     //}
-        //     heartMdl = _obj.clone();
-        //     console.log(heartMdl);
-        // })
     });
 
 
     scene.background = new THREE.Color(0xddddff);
     scene.fog = new THREE.Fog(0x555566, 10, 500);
-    //var light = new THREE.HemisphereLight(0xbb8888, 0x001100, 1);
     var light = new THREE.HemisphereLight(0xffffff, 0x112255, 1);
     light.position.set(0.5, 1, 0.75);
     scene.add(light);
@@ -291,6 +267,8 @@ function animate() {
 
     restartTmr += delta;
 
+    // after a certain amount of time we restart 
+    // so the evolution can be heard from the beginning
     if(restartTmr > restartTmrMax)
     {
         logger.log("Restarting Simulation");
@@ -339,6 +317,7 @@ function animate() {
     }
 
 
+    // reproduction
     for (var p in pigs) {
         pigs[p].update(delta);
         params.push(pigs[p].getBaby());
@@ -365,6 +344,7 @@ function animate() {
         } else {}
     }
 
+    // has a new pig been born ???
     for (var p in params)
     {
         if (params[p])
@@ -407,14 +387,6 @@ function animate() {
         if(controls.getObject().position.x >  (gardenSize)) controls.getObject().position.x =    (gardenSize/2);
         if(controls.getObject().position.z < -(gardenSize)) controls.getObject().position.z =  -(gardenSize/2);
         if(controls.getObject().position.z >  (gardenSize)) controls.getObject().position.z =    (gardenSize/2);
-
-
-        // if ( controls.getObject().position.y < 10 )
-        // {
-        // 	velocity.y = 0;
-        // 	controls.getObject().position.y = 10;
-        // 	canJump = true;
-        // }
 
     }
 
